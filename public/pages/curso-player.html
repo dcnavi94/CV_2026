@@ -491,11 +491,11 @@
                     });
                     moduleList.innerHTML = html;
 
-                    // Load first lesson
-                    loadLesson(0);
-
-                    // Initialize Progress
+                    // Initialize Progress first to prevent overwriting
                     loadProgress(courseId);
+
+                    // Load first lesson (it will auto-save completion of lesson 0 upon loading)
+                    loadLesson(0);
 
                     // Add click handlers for lessons
                     moduleList.querySelectorAll('.lesson-item').forEach(item => {
