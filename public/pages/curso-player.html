@@ -19,45 +19,101 @@
         /* Layout */
         .course-layout {
             display: grid;
-            grid-template-columns: 350px 1fr;
-            min-height: 100vh;
+            grid-template-columns: 320px 1fr;
+            height: 100vh;
+            overflow: hidden;
+            background: #02040a;
         }
 
         /* Sidebar (Temario) */
         .course-sidebar {
-            background: rgba(11, 17, 29, 0.95);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0b101a;
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
             display: flex;
             flex-direction: column;
-            overflow-y: auto;
-            position: sticky;
-            top: 0;
-            height: 100vh;
+            overflow: hidden;
+            /* Changed from overflow-y auto to allow inner scroll */
+            z-index: 50;
         }
 
         .sidebar-header {
             padding: 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(0, 0, 0, 0.2);
         }
 
         .back-link {
-            color: #aaa;
+            color: #666;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             display: flex;
             align-items: center;
             gap: 6px;
             margin-bottom: 15px;
+            transition: 0.2s;
         }
 
         .back-link:hover {
             color: #fff;
         }
 
+        /* User Profile Styles */
+        .user-profile-compact {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .user-avatar-placeholder {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #2563eb);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: white;
+        }
+
+        .btn-small {
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+            width: 100%;
+        }
+
+        .btn-logout {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            margin-left: auto;
+            width: auto !important;
+            padding: 6px 10px;
+        }
+
+        .btn-logout:hover {
+            background: #ef4444;
+            color: white;
+        }
+
         .module-list {
             list-style: none;
             padding: 0;
             margin: 0;
+            flex: 1;
+            /* Take remaining height */
+            overflow-y: auto;
+            /* Scroll inside list */
         }
 
         .module-header {
@@ -123,6 +179,7 @@
             font-size: 1.05rem;
         }
 
+        /* Responsive Mobile */
         @media (max-width: 900px) {
             .course-layout {
                 display: block;
@@ -135,20 +192,21 @@
                 left: 0;
                 bottom: 0;
                 width: 280px;
-                z-index: 1000;
-                background: #04070d;
-                border-right: 1px solid rgba(255, 255, 255, 0.1);
+                background: #0b101a;
                 transform: translateX(-100%);
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
+                z-index: 1000;
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
             }
 
             .course-sidebar.active {
                 transform: translateX(0);
-                box-shadow: 10px 0 50px rgba(0, 0, 0, 0.8);
             }
 
             .course-content {
-                padding: 20px;
+                padding: 20px 15px 80px;
+                /* Padding for bottom button */
                 width: 100%;
                 box-sizing: border-box;
             }
@@ -210,25 +268,38 @@
         <aside class="course-sidebar">
             <div class="sidebar-header">
                 <a href="/cursos" class="back-link">← Volver a Cursos</a>
-                <h4 style="margin:0; font-weight:600;">Temario del Curso</h4>
 
-                <!-- User Auth Area -->
-                <div style="margin: 20px 0; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px;">
-                    <button id="loginBtn"
-                        style="width:100%; padding:10px; background:#30d158; border:none; border-radius:6px; cursor:pointer; font-weight:700; color:black;">
+                <!-- User Profile Compact -->
+                <div id="authContainer">
+                    <button id="loginBtn" class="btn-small"
+                        style="background:var(--accent); color:black; width:100%; margin-top:10px;">
                         Iniciar Sesión
                     </button>
-                    <div id="userInfo"></div>
-                    <button id="logoutBtn"
-                        style="display:none; width:100%; margin-top:10px; padding:8px; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid #ef4444; border-radius:6px; cursor:pointer; font-size:0.8rem;">
-                        Cerrar Sesión
-                    </button>
+
+                    <div id="userProfile" class="user-profile-compact" style="display:none;">
+                        <div class="user-avatar-placeholder" id="userInitial">U</div>
+                        <div style="flex:1; overflow:hidden;">
+                            <div id="userName"
+                                style="font-size:0.85rem; font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                Usuario</div>
+                            <div style="font-size:0.7rem; color:#888;">Estudiante</div>
+                        </div>
+                        <button id="logoutBtn" class="btn-logout btn-small" title="Salir">⏻</button>
+                    </div>
                 </div>
 
-                <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;">
-                    <div style="width:0%; height:100%; background:#30d158;"></div>
+                <!-- Progress Bar -->
+                <div style="margin-top:15px;">
+                    <div
+                        style="display:flex; justify-content:space-between; font-size:0.75rem; color:#888; margin-bottom:6px;">
+                        <span>Progreso</span>
+                        <span id="progressText">0%</span>
+                    </div>
+                    <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;">
+                        <div id="progressBar"
+                            style="width:0%; height:100%; background:var(--accent); transition:width 0.5s;"></div>
+                    </div>
                 </div>
-                <div style="font-size:0.75rem; color:#888; margin-top:6px;">0% Completado</div>
             </div>
 
             <ul class="module-list">
@@ -283,7 +354,9 @@
         const loginBtn = document.getElementById('loginBtn');
         const loginBtnLocker = document.getElementById('loginBtnLocker');
         const logoutBtn = document.getElementById('logoutBtn');
-        const userInfo = document.getElementById('userInfo');
+        const userProfile = document.getElementById('userProfile');
+        const userInitial = document.getElementById('userInitial');
+        const userName = document.getElementById('userName');
         const videoContainer = document.getElementById('videoContainer');
         const contentLocker = document.getElementById('contentLocker');
         const lessonTitle = document.querySelector('.lesson-title');
@@ -325,10 +398,12 @@
             const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
 
             // Update bar text
-            document.querySelector('.sidebar-header div[style*="font-size:0.75rem"]').textContent = `${percent}% Completado`;
+            const pt = document.getElementById('progressText');
+            if (pt) pt.textContent = `${percent}%`;
 
             // Update bar width
-            document.querySelector('.sidebar-header div[style*="width:0%"]').style.width = `${percent}%`;
+            const pb = document.getElementById('progressBar');
+            if (pb) pb.style.width = `${percent}%`;
 
             // Update list items visuals
             document.querySelectorAll('.lesson-item').forEach((item, index) => {
