@@ -956,7 +956,7 @@ footer {
     font-weight: 700;
 }
 
-/* Responsive */
+/* Responsive - Tablet */
 @media (max-width: 768px) {
     .aboutGrid {
         grid-template-columns: 1fr;
@@ -972,5 +972,404 @@ footer {
 
     .grid3 {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ==================== MOBILE RESPONSIVE ==================== */
+@media (max-width: 640px) {
+
+    /* Container */
+    .container {
+        width: calc(100% - 32px);
+        padding: 0 16px;
+    }
+
+    /* Header Mobile */
+    .header {
+        padding: 8px 0;
+    }
+
+    .nav {
+        padding: 10px 0;
+        flex-wrap: wrap;
+    }
+
+    .brand {
+        gap: 8px;
+    }
+
+    .brand .name {
+        font-size: 0.9rem;
+    }
+
+    .brand .name small {
+        font-size: 0.65rem;
+        display: block;
+    }
+
+    .logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+
+    /* Hide desktop nav links on mobile */
+    .links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(4, 7, 13, 0.98);
+        flex-direction: column;
+        padding: 20px;
+        border-bottom: 1px solid var(--border);
+        gap: 5px;
+    }
+
+    .links.active {
+        display: flex;
+    }
+
+    .links a {
+        padding: 12px 16px;
+        text-align: center;
+        border-radius: 8px;
+    }
+
+    .right {
+        gap: 8px;
+    }
+
+    .pill {
+        transform: scale(0.9);
+    }
+
+    .social-links {
+        display: none !important;
+    }
+
+    /* Hero Mobile */
+    .hero {
+        padding: 20px 0 30px;
+    }
+
+    .heroGrid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .profileCard {
+        padding: 20px;
+    }
+
+    .avatar {
+        max-width: 200px;
+        margin: 0 auto 16px;
+    }
+
+    .kpiRow {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .kpi {
+        padding: 12px;
+    }
+
+    .kpi .num {
+        font-size: 1.2rem;
+    }
+
+    .kpi .lbl {
+        font-size: 0.7rem;
+    }
+
+    .mainCard {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .mainCard h1 {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+
+    .subtitle {
+        font-size: 0.95rem;
+        line-height: 1.4;
+    }
+
+    .hero-desc {
+        font-size: 0.9rem;
+    }
+
+    .tagline {
+        justify-content: center;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    .ctaRow {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 20px;
+    }
+
+    .statStrip {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat {
+        padding: 12px;
+    }
+
+    .stat strong {
+        font-size: 0.85rem;
+    }
+
+    .stat span {
+        font-size: 0.7rem;
+    }
+
+    /* Sections Mobile */
+    section {
+        padding: 40px 0;
+    }
+
+    .sectionTitle h2 {
+        font-size: 1.5rem;
+    }
+
+    .sectionTitle p {
+        font-size: 0.9rem;
+    }
+
+    /* Skills Grid Mobile */
+    .grid3 {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .miniCard {
+        padding: 16px;
+    }
+
+    .miniCard h3 {
+        font-size: 1rem;
+        margin-bottom: 12px;
+    }
+
+    .skills-grid {
+        gap: 8px;
+    }
+
+    .skill-item {
+        font-size: 0.85rem;
+        padding: 8px;
+    }
+
+    /* Certifications Mobile */
+    .cert-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .cert-card {
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .cert-icon {
+        width: 48px;
+        height: 48px;
+    }
+
+    .cert-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .cert-content h3 {
+        font-size: 1rem;
+    }
+
+    /* Portfolio Mobile */
+    .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .filters {
+        overflow-x: auto;
+        padding-bottom: 8px;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .chip {
+        flex-shrink: 0;
+        font-size: 0.8rem;
+        padding: 8px 12px;
+    }
+
+    .search {
+        width: 100%;
+    }
+
+    .search input {
+        width: 100%;
+    }
+
+    .projects {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .project {
+        padding: 16px;
+    }
+
+    .project .thumb {
+        height: 140px;
+    }
+
+    .project h4 {
+        font-size: 1rem;
+    }
+
+    /* CV Section Mobile */
+    #cv .card>div:first-of-type {
+        flex-direction: column;
+        text-align: center;
+        gap: 16px;
+    }
+
+    #cv .card>div>div:last-child {
+        width: 100%;
+    }
+
+    #cv .btn {
+        width: 100%;
+    }
+
+    /* Timeline Mobile */
+    .timeline {
+        padding-left: 16px;
+    }
+
+    .timeline-item {
+        padding-left: 16px;
+    }
+
+    .timeline-date {
+        font-size: 0.75rem;
+    }
+
+    .timeline-title {
+        font-size: 0.95rem;
+    }
+
+    /* Contact Mobile */
+    .aboutGrid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .about-item {
+        flex-direction: column;
+        text-align: center;
+        gap: 12px;
+    }
+
+    .about-icon {
+        margin: 0 auto;
+    }
+
+    .contactCard {
+        padding: 16px;
+    }
+
+    .contactItem {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+        padding: 16px 0;
+    }
+
+    .copyBtn {
+        width: 100%;
+    }
+
+    /* Footer Mobile */
+    footer {
+        padding: 20px 0;
+    }
+
+    footer .container {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+
+    /* Modal Mobile */
+    .modal {
+        width: 95%;
+        max-height: 90vh;
+        margin: 20px;
+    }
+
+    .modalHeader {
+        padding: 16px;
+    }
+
+    .modalHeader strong {
+        font-size: 1rem;
+    }
+
+    .modalBody {
+        padding: 16px;
+    }
+
+    .modalImageArea {
+        height: 180px;
+    }
+
+    .modalContentGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    /* Hide mouse glow on mobile */
+    .mouse-glow {
+        display: none;
+    }
+
+    /* Status pill mobile */
+    .status-pill {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    .role-badge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+
+    /* Pill Language Switcher */
+    .pill button {
+        padding: 6px 10px;
+        font-size: 0.75rem;
     }
 }
