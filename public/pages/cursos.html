@@ -266,12 +266,14 @@
         </a>
         <div class="links" style="display:flex; gap:12px; align-items:center;">
             <a href="/"
-                style="color:var(--muted); font-weight:600; padding:8px 16px; border-radius:8px; transition:0.3s;">←
+                style="color:var(--muted); font-weight:600; padding:8px 16px; border-radius:8px; transition:0.3s; text-decoration:none;">←
                 Inicio</a>
-            <a href="/admin" id="adminLink"
-                style="display:none; background:rgba(48,209,88,0.2); padding:8px 16px; border-radius:8px; color:#30d158; font-weight:700;">
-                🔧 Admin
-            </a>
+
+            <div id="authMenu" style="display:flex; gap:10px; align-items:center;">
+                <button id="loginBtn"
+                    style="background:none; border:1px solid rgba(255,255,255,0.3); color:white; padding:6px 14px; border-radius:8px; cursor:pointer;">Iniciar
+                    Sesión</button>
+            </div>
         </div>
     </nav>
 
@@ -321,12 +323,38 @@
     <script type="module" src="/public/assets/js/public-courses.js"></script>
     <script type="module">
         import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { login, logout } from '/src/controllers/auth-controller.js';
         import { currentUser } from '/src/models/user.js';
+
+        const authMenu = document.getElementById('authMenu');
+
+        // Event Delegation for dynamic buttons
+        authMenu.addEventListener('click', (e) => {
+            if (e.target.id === 'loginBtn') login();
+            if (e.target.id === 'logoutBtn') logout();
+        });
 
         onAuthStateChanged(auth, (user) => {
             currentUser.set(user);
-            if (currentUser.isAdmin()) {
-                document.getElementById('adminLink').style.display = 'inline-block';
+
+            if (user) {
+                const isAdmin = currentUser.isAdmin();
+
+                authMenu.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <a href="/pages/alumno.html" style="color:white; text-decoration:none; font-size:0.9rem; font-weight:600; background:rgba(255,255,255,0.1); padding:6px 12px; border-radius:6px;">Mi Panel</a>
+                        
+                        ${isAdmin ? `<a href="/admin" style="color:#30d158; text-decoration:none; font-size:0.9rem; font-weight:700; background:rgba(48,209,88,0.15); padding:6px 12px; border-radius:6px;">Admin</a>` : ''}
+                        
+                        <img src="${user.photoURL || 'https://via.placeholder.com/32'}" title="${user.displayName}" style="width:32px; height:32px; border-radius:50%; border:1px solid rgba(255,255,255,0.2);">
+                        
+                        <button id="logoutBtn" style="background:none; border:none; color:#ef4444; font-size:1.2rem; cursor:pointer;" title="Cerrar Sesión">⏻</button>
+                    </div>
+                `;
+            } else {
+                authMenu.innerHTML = `
+                    <button id="loginBtn" style="background:none; border:1px solid rgba(255,255,255,0.3); color:white; padding:6px 14px; border-radius:8px; cursor:pointer; font-weight:600;">Iniciar Sesión</button>
+                `;
             }
         });
     </script>
