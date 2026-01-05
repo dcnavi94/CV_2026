@@ -497,11 +497,21 @@
                     });
                     moduleList.innerHTML = html;
 
-                    // Initialize Progress first to prevent overwriting
+                    // Initialize Progress first
                     loadProgress(courseId);
 
-                    // Load first lesson (it will auto-save completion of lesson 0 upon loading)
-                    loadLesson(0);
+                    // Inteligent Resume: Find first uncompleted lesson
+                    let nextIndex = 0;
+                    if (completedLessons.size > 0 && completedLessons.size < currentCourse.lessons.length) {
+                        for (let i = 0; i < currentCourse.lessons.length; i++) {
+                            if (!completedLessons.has(i)) {
+                                nextIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                    // Load calculated lesson
+                    loadLesson(nextIndex);
 
                     // Add click handlers for lessons
                     moduleList.querySelectorAll('.lesson-item').forEach(item => {
