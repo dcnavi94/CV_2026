@@ -19,6 +19,12 @@ const routes = {
     '/curso': '/public/pages/curso-player.html',
     '/admin': '/admin/index.html',
     '/admin/': '/admin/index.html',
+    // New Routes
+    '/curso-detalle': '/public/pages/curso-detalle.html',
+    '/pages/curso-detalle.html': '/public/pages/curso-detalle.html',
+    '/alumno': '/public/pages/alumno.html',
+    '/pages/alumno.html': '/public/pages/alumno.html',
+    '/pages/curso-player.html': '/public/pages/curso-player.html'
 };
 
 // Tipos MIME
@@ -44,45 +50,43 @@ const server = http.createServer((req, res) => {
 
     console.log(`[${new Date().toISOString()}] ${req.method} ${urlPath}`);
 
-    // 1. BLOQUEAR ACCESO DIRECTO A .HTML
-    if (urlPath.endsWith('.html')) {
-        res.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
-        res.end(`
-            <!DOCTYPE html>
-            <html lang="es">
-            <head><title>Acceso Denegado</title>
-            <style>
-                body { font-family: system-ui; background: #0a0a0a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-                .container { text-align: center; }
-                h1 { font-size: 4rem; margin: 0; color: #ef4444; }
-                p { color: #888; }
-                a { color: #30d158; }
-            </style>
-            </head>
-            <body>
-                <div class="container">
-                    <h1>403</h1>
-                    <p>Acceso directo a archivos .html no permitido.</p>
-                    <p><a href="/">Ir al Inicio</a></p>
-                </div>
-            </body>
-            </html>
-        `);
-        return;
-    }
-
-    // 2. RESOLVER RUTA
     let filePath;
 
+    // 1. REVISAR RUTAS PERMITIDAS PRIMERO (Rutas Amigables o Excepciones)
     if (routes[urlPath]) {
-        // Ruta amigable mapeada
         filePath = path.join(__dirname, routes[urlPath]);
     } else {
-        // Archivo estático (CSS, JS, imágenes)
-        // 1. Intentar ruta directa
+        // 2. SI NO ES RUTA PERMITIDA, APLICAR BLOQUEO A .HTML DIRECTO
+        if (urlPath.endsWith('.html')) {
+            res.writeHead(403, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(`
+                <!DOCTYPE html>
+                <html lang="es">
+                <head><title>Acceso Denegado</title>
+                <style>
+                    body { font-family: system-ui; background: #0a0a0a; color: white; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+                    .container { text-align: center; }
+                    h1 { font-size: 4rem; margin: 0; color: #ef4444; }
+                    p { color: #888; }
+                    a { color: #30d158; }
+                </style>
+                </head>
+                <body>
+                    <div class="container">
+                        <h1>403</h1>
+                        <p>Acceso directo a archivos .html no permitido.</p>
+                        <p><a href="/">Ir al Inicio</a></p>
+                    </div>
+                </body>
+                </html>
+            `);
+            return;
+        }
+
+        // 3. RESOLVER ARCHIVOS ESTÁTICOS (CSS, JS, IMGs)
         filePath = path.join(__dirname, urlPath);
 
-        // 2. Si no existe, intentar buscar dentro de /public (Simular producción)
+        // Si no existe directo, intentar en /public
         if (!fs.existsSync(filePath)) {
             const publicPath = path.join(__dirname, 'public', urlPath);
             if (fs.existsSync(publicPath)) {
