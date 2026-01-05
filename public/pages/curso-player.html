@@ -210,13 +210,14 @@
             }
 
             .course-sidebar {
-                position: fixed;
+                position: fixed !important;
                 top: 0;
                 left: 0;
                 bottom: 0;
-                width: 280px;
+                width: 280px !important;
+                height: 100vh !important;
                 background: #0b101a;
-                transform: translateX(-100%);
+                transform: translateX(-100%) !important;
                 transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
                 box-shadow: 10px 0 30px rgba(0, 0, 0, 0.5);
                 z-index: 1000;
@@ -224,7 +225,7 @@
             }
 
             .course-sidebar.active {
-                transform: translateX(0);
+                transform: translateX(0) !important;
             }
 
             .course-content {
