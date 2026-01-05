@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles del Curso | Iván Carapia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        :root {
+            --bg-dark: #02040a;
+            --card-bg: #0f1623;
+            --accent: #30d158;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+        }
+
+        /* HERO SECTION */
+        .course-hero {
+            position: relative;
+            padding: 120px 20px 60px;
+            background: radial-gradient(circle at 50% 30%, #1a2333 0%, #02040a 70%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            overflow: hidden;
+        }
+
+        .hero-bg-blur {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.15;
+            filter: blur(40px);
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 900px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .badge-new {
+            background: rgba(48, 209, 88, 0.15);
+            color: var(--accent);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-block;
+            margin-bottom: 15px;
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 0 0 20px;
+            line-height: 1.1;
+        }
+
+        .hero-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 30px;
+            max-width: 600px;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* CARD ACTION */
+        .purchase-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            position: sticky;
+            top: 20px;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .price-sub {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            text-decoration: line-through;
+        }
+
+        .btn-cta {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: var(--accent);
+            color: black;
+            font-weight: 800;
+            text-align: center;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(48, 209, 88, 0.3);
+        }
+
+        .guarantee {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 15px;
+        }
+
+        /* CONTENT */
+        .course-details {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 20px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 60px;
+        }
+
+        @media (max-width: 900px) {
+            .course-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .syllabus-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: 0.2s;
+        }
+
+        .syllabus-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .lesson-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(48, 209, 88, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+        }
+
+        .lesson-lock {
+            margin-left: auto;
+            color: #555;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav
+        style="position:absolute; top:0; width:100%; padding:20px; z-index:100; box-sizing:border-box; display:flex; justify-content:space-between; align-items:center;">
+        <a href="/" style="color:white; text-decoration:none; font-weight:800; font-size:1.2rem;">Iván Carapia</a>
+        <div id="navAuth" style="display:flex; gap:15px; align-items:center;">
+            <button id="navLoginBtn"
+                style="background:none; border:1px solid white; color:white; padding:8px 16px; border-radius:8px; cursor:pointer;">Iniciar
+                Sesión</button>
+        </div>
+    </nav>
+
+    <div id="loading" style="height:100vh; display:flex; align-items:center; justify-content:center;">
+        Cargando curso...
+    </div>
+
+    <!-- MAIN CONTENT (HIDDEN UNTIL LOADED) -->
+    <div id="courseContent" style="display:none;">
+
+        <!-- HERO -->
+        <header class="course-hero">
+            <img id="bgImage" class="hero-bg-blur" src="" alt="">
+
+            <div class="hero-content">
+                <div>
+                    <span class="badge-new">Curso Actualizado 2026</span>
+                    <h1 id="courseTitle">Título del Curso</h1>
+                    <p class="hero-desc" id="courseDesc">Descripción corta del curso...</p>
+
+                    <div class="meta-info">
+                        <div class="meta-item"><span>👥</span> <span id="studentCount">125 Estudiantes</span></div>
+                        <div class="meta-item"><span>⭐</span> <span>4.9/5 Calificación</span></div>
+                        <div class="meta-item"><span>📅</span> <span>Última actualización: Hoy</span></div>
+                    </div>
+                </div>
+
+                <!-- PURCHASE CARD (DESKTOP) -->
+                <div class="purchase-card">
+                    <img id="cardImage" src=""
+                        style="width:100%; border-radius:10px; margin-bottom:20px; max-height:200px; object-fit:cover;">
+                    <div class="price-tag" id="coursePrice">$0</div>
+                    <div class="price-sub">$199.00 Precio original</div>
+
+                    <button id="enrollBtn" class="btn-cta">Inscribirse Ahora</button>
+                    <p class="guarantee">30 días de garantía de devolución - Acceso de por vida</p>
+
+                    <div style="margin-top:20px; border-top:1px solid rgba(255,255,255,0.1); padding-top:20px;">
+                        <div style="font-weight:700; margin-bottom:10px;">Este curso incluye:</div>
+                        <ul
+                            style="list-style:none; padding:0; margin:0; font-size:0.9rem; color:var(--text-muted); display:grid; gap:8px;">
+                            <li>✅ Acceso de por vida</li>
+                            <li>✅ Certificado de finalización</li>
+                            <li>✅ Recursos descargables</li>
+                            <li>✅ Acceso en dispositivos móviles</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DETAILS -->
+        <section class="course-details">
+            <div>
+                <h2 style="font-size:1.8rem; margin-bottom:20px;">Lo que aprenderás</h2>
+                <div
+                    style="background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); padding:25px; border-radius:16px; margin-bottom:40px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;" id="learningPoints">
+                        <div style="display:flex; gap:10px;"><span style="color:var(--accent);">✓</span> Dominarás los
+                            fundamentos desde cero.</div>
+                        <div style="display:flex; gap:10px;"><span style="color:var(--accent);">✓</span> Proyectos
+                            prácticos reales.</div>
+                        <div style="display:flex; gap:10px;"><span style="color:var(--accent);">✓</span> Mejores
+                            prácticas de la industria.</div>
+                        <div style="display:flex; gap:10px;"><span style="color:var(--accent);">✓</span> Despliegue en
+                            producción.</div>
+                    </div>
+                </div>
+
+                <h2 style="font-size:1.8rem; margin-bottom:20px;">Contenido del Curso</h2>
+                <div id="syllabusContainer">
+                    <!-- Lessons -->
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script type="module">
+        import { getCourseById } from '/src/controllers/course-controller.js';
+        import { onAuthStateChanged, auth, db, doc, getDoc, setDoc } from '/src/config/firebase-config.js';
+        import { login } from '/src/controllers/auth-controller.js';
+
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('id');
+        let currentUser = null;
+        let isEnrolled = false;
+
+        async function init() {
+            if (!courseId) {
+                window.location.href = '/cursos';
+                return;
+            }
+
+            // Bind Login
+            document.getElementById('navLoginBtn')?.addEventListener('click', login);
+
+            try {
+                const course = await getCourseById(courseId);
+                if (!course) throw new Error("Curso no encontrado");
+
+                renderCourse(course);
+                checkEnrollment();
+
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('courseContent').style.display = 'block';
+
+                document.getElementById('enrollBtn').addEventListener('click', () => handleEnroll(course));
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('loading').innerHTML = "Error al cargar el curso.";
+            }
+        }
+
+        function renderCourse(course) {
+            document.title = `${course.title} | Iván Carapia`;
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseDesc').textContent = course.desc || "Aprende con este curso completo y práctico.";
+            document.getElementById('coursePrice').textContent = course.price === 'Gratis' ? 'Gratis' : course.price;
+            document.getElementById('bgImage').src = course.image || 'https://via.placeholder.com/1200x600';
+            document.getElementById('cardImage').src = course.image || 'https://via.placeholder.com/600x400';
+
+            const syl = document.getElementById('syllabusContainer');
+            if (course.lessons && course.lessons.length > 0) {
+                syl.innerHTML = course.lessons.map((l, i) => `
+                    <div class="syllabus-item">
+                        <div class="lesson-icon">${l.type === 'video' ? '▶' : '📄'}</div>
+                        <div style="flex:1;">
+                            <div style="font-weight:600;">${l.title}</div>
+                            <div style="font-size:0.8rem; color:#888;">${l.type.toUpperCase()}</div>
+                        </div>
+                        <div class="lesson-lock">🔒</div>
+                    </div>
+                `).join('');
+            } else {
+                syl.innerHTML = '<div style="color:#888;">Próximamente se añadirá contenido.</div>';
+            }
+        }
+
+        function checkEnrollment() {
+            onAuthStateChanged(auth, async (user) => {
+                currentUser = user;
+                const nav = document.getElementById('navAuth');
+
+                if (user) {
+                    nav.innerHTML = `
+                        <div style="font-weight:600; font-size:0.9rem; text-align:right;">
+                            <div>${user.displayName || 'Usuario'}</div>
+                        </div>
+                        <a href="/pages/alumno.html" style="background:rgba(255,255,255,0.2); padding:8px 16px; border-radius:8px; color:white; text-decoration:none; font-size:0.9rem; font-weight:600;">Mi Panel</a>
+                     `;
+
+                    try {
+                        const snap = await getDoc(doc(db, "users", user.uid, "progress", courseId));
+                        if (snap.exists()) {
+                            isEnrolled = true;
+                            updateButtonState();
+                        }
+                    } catch (e) { console.log(e); }
+                } else {
+                    nav.innerHTML = `<button id="navLoginBtn2" style="background:none; border:1px solid white; color:white; padding:8px 16px; border-radius:8px; cursor:pointer;">Iniciar Sesión</button>`;
+                    document.getElementById('navLoginBtn2').addEventListener('click', login);
+                }
+            });
+        }
+
+        function updateButtonState() {
+            const btn = document.getElementById('enrollBtn');
+            if (isEnrolled) {
+                btn.textContent = "Continuar al Curso ▶";
+                btn.style.background = "#ffffff";
+                btn.style.color = "black";
+            } else {
+                btn.textContent = "Inscribirse Ahora";
+            }
+        }
+
+        async function handleEnroll(course) {
+            if (!currentUser) {
+                login();
+                return;
+            }
+
+            if (isEnrolled) {
+                window.location.href = `/pages/curso-player.html?id=${courseId}`;
+                return;
+            }
+
+            const btn = document.getElementById('enrollBtn');
+            const originalText = btn.textContent;
+            btn.textContent = "Procesando...";
+            btn.disabled = true;
+
+            try {
+                await setDoc(doc(db, "users", currentUser.uid, "progress", courseId), {
+                    startedAt: new Date().toISOString(),
+                    lastUpdate: new Date().toISOString(),
+                    percent: 0,
+                    completedLessons: [],
+                    courseTitle: course.title
+                }, { merge: true });
+
+                window.location.href = `/pages/curso-player.html?id=${courseId}`;
+
+            } catch (e) {
+                console.error(e);
+                alert("Error al inscribirse.");
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        init();
+    </script>
+</body>
+
+</html>
