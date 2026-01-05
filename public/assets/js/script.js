@@ -8,7 +8,7 @@ const projects = [
     summaryES: "Diseño e implementación de red LAN/WLAN para campus educativo de alta densidad.",
     summaryEN: "Design and deployment of LAN/WLAN infrastructure for high-density educational campus.",
     tags: ["Cisco", "VLANs", "Cableado Estructurado", "Mikrotik"],
-    thumb: "images/network.png",
+    thumb: "assets/images/network.png",
     detailES: `
       <h3>🚧 El Reto</h3>
       <p>La institución sufría de desconexiones constantes y lentitud debido a una red obsoleta no segmentada, afectando a más de 500 usuarios simultáneos (alumnos y administrativos).</p>
@@ -55,7 +55,7 @@ const projects = [
     summaryES: "Administración y optimización de base de datos SQL para sistema crítico de calificaciones.",
     summaryEN: "SQL database administration and optimization for critical grading system.",
     tags: ["SQL Server", "Integridad de Datos", "Stored Procedures"],
-    thumb: "images/grading.png",
+    thumb: "assets/images/grading.png",
     detailES: `
       <h3>🚧 El Reto</h3>
       <p>El sistema anterior presentaba inconsistencias en los historiales académicos y tiempos de consulta lentos durante los periodos de evaluación final.</p>
@@ -100,7 +100,7 @@ const projects = [
     summaryES: "Desarrollo y despliegue de plataforma personalizada de aprendizaje durante la contingencia.",
     summaryEN: "Development and deploying of custom learning platform during contingency.",
     tags: ["Vue.js", "PHP", "MySQL", "UX/UI"],
-    thumb: "images/platform.png",
+    thumb: "assets/images/platform.png",
     detailES: `
       <h3>🚧 El Reto</h3>
       <p>Necesidad urgente de migrar 100% clases presenciales a remoto sin perder la capacidad de seguimiento académico personalizado.</p>
@@ -145,7 +145,7 @@ const projects = [
     summaryES: "Orquestación de servicios en servidor Vultr/DigitalOcean para alojamiento web.",
     summaryEN: "Service orchestration on Vultr/DigitalOcean servers for web hosting.",
     tags: ["Ubuntu Server", "Nginx", "SSL/Certbot", "Bash"],
-    thumb: "images/vps.png",
+    thumb: "assets/images/vps.png",
     detailES: `
       <h3>🚧 El Reto</h3>
       <p>Migrar aplicaciones de hosting compartido lento a una infraestructura dedicada, escalable y segura.</p>
@@ -186,7 +186,7 @@ const projects = [
     summaryES: "Integración de hardware y software para soluciones de automatización simples.",
     summaryEN: "Hardware and software integration for simple automation solutions.",
     tags: ["C++", "Arduino/ESP32", "Sensores", "MQTT"],
-    thumb: "images/iot.png",
+    thumb: "assets/images/iot.png",
     detailES: `
       <h3>🚧 El Proyecto</h3>
       <p>Desarrollo de sistemas de monitoreo ambiental y control de acceso utilizando microcontroladores de bajo costo.</p>

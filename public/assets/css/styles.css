@@ -1047,25 +1047,26 @@ footer {
         display: flex;
     }
 
-    .links a {
+    /* Ocultar todos los links excepto Cursos en móvil */
+    .links a:not(.nav-courses) {
+        display: none;
+    }
+
+    .links a.nav-courses {
+        display: block;
         padding: 16px 20px;
         text-align: center;
         border-radius: 12px;
-        font-size: 1.1rem;
-        border: 1px solid var(--border);
+        font-size: 1.2rem;
+        border: 1px solid var(--accent);
         transition: 0.3s;
+        background: rgba(48, 209, 88, 0.15);
+        color: var(--accent);
     }
 
-    .links a:hover,
-    .links a:active {
-        background: rgba(255, 255, 255, 0.1);
-        border-color: var(--accent);
-    }
-
-    .nav-courses {
-        background: rgba(48, 209, 88, 0.15) !important;
-        border-color: rgba(48, 209, 88, 0.4) !important;
-        font-size: 1.2rem !important;
+    .links a.nav-courses:hover {
+        background: var(--accent);
+        color: black;
     }
 
     .social-links {
