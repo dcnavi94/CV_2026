@@ -431,26 +431,35 @@
 
             // Check completion trigger
             if (percent === 100) {
-                setTimeout(showCertificate, 1000); // Small delay for effect
+                setTimeout(showCertificate, 1000);
             }
+
+            // Update list items visuals (Moved back inside function)
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                if (completedLessons.has(index)) {
+                    if (!item.querySelector('.check-icon')) {
+                        const check = document.createElement('span');
+                        check.className = 'check-icon';
+                        check.textContent = ' ✓';
+                        check.style.color = '#30d158';
+                        check.style.fontWeight = 'bold';
+                        check.style.marginLeft = 'auto';
+                        item.appendChild(check);
+                        item.style.display = 'flex';
+                        item.style.justifyContent = 'space-between';
+                    }
+                }
+            });
         }
 
-        // Certificate Logic
+        // Certificate Logic (Moved outside)
         window.closeCertificate = function () {
             document.getElementById('certificateModal').classList.remove('active');
         }
 
         function showCertificate() {
-            // Populate Data
-            const user = currentUser.get(); // Access user state (defined below wrapper) or use global var?
-            // Actually currentUser is a signal defined in line 356, its value is accessible via currentUser.get()
-            // Wait, signals are usually reactive. In my code line 658: currentUser.set(user).
-            // But let's check if currentUser variable is standard signal or my custom dummy.
-            // Assuming it's the one from previous context. Let's verify line 356 implementation.
-
-            // Fallback if currentUser not available perfectly scope-wise: use global 'auth.currentUser' from firebase if needed, 
-            // but let's assume we can get name from DOM if needed.
             const nameEl = document.getElementById('userName');
+            const user = currentUser.get();
             const studentName = (user && (user.displayName || user.email)) || (nameEl ? nameEl.innerText.replace('Hola, ', '') : 'Estudiante');
 
             document.getElementById('certStudentName').textContent = studentName || "Estudiante";
@@ -459,28 +468,7 @@
             const today = new Date();
             document.getElementById('certDate').textContent = today.toLocaleDateString();
 
-            // Show Modal
             document.getElementById('certificateModal').classList.add('active');
-
-            // Launch confetti if possible? Maybe later.
-        }
-
-        // Update list items visuals
-        document.querySelectorAll('.lesson-item').forEach((item, index) => {
-            if (completedLessons.has(index)) {
-                if (!item.querySelector('.check-icon')) {
-                    const check = document.createElement('span');
-                    check.className = 'check-icon';
-                    check.textContent = ' ✓';
-                    check.style.color = '#30d158';
-                    check.style.fontWeight = 'bold';
-                    check.style.marginLeft = 'auto'; // Push to right
-                    item.appendChild(check);
-                    item.style.display = 'flex';
-                    item.style.justifyContent = 'space-between';
-                }
-            }
-        });
         }
 
         // Load course data
