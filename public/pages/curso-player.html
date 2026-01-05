@@ -16,12 +16,13 @@
             color: white;
         }
 
-        /* Layout */
+        /* Layout Desktop Forced */
         .course-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            height: 100vh;
-            overflow: hidden;
+            display: grid !important;
+            grid-template-columns: 320px 1fr !important;
+            height: 100vh !important;
+            width: 100vw !important;
+            overflow: hidden !important;
             background: #02040a;
         }
 
@@ -182,8 +183,8 @@
         /* Responsive Mobile */
         @media (max-width: 900px) {
             .course-layout {
-                display: block;
-                /* Remove grid to allow overlay */
+                display: block !important;
+                /* Force block override */
             }
 
             .course-sidebar {
