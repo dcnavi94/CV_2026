@@ -1,7 +1,7 @@
-import { auth, provider, signInWithPopup, signOut, onAuthStateChanged, db, doc, setDoc } from '../config/firebase-config.js';
+import { auth, provider, signInWithPopup, signInWithRedirect, getRedirectResult, signOut, onAuthStateChanged, db, doc, setDoc } from '../config/firebase-config.js';
 import { currentUser } from '../models/user.js';
 
-// UI Elements (Búsqueda defensiva: si no existen, no pasa nada)
+// UI Elements (Búsqueda defensiva)
 const getEl = (id) => document.getElementById(id);
 
 const ui = {
@@ -10,40 +10,63 @@ const ui = {
     userInfo: getEl('userInfo'),
     adminPanel: getEl('adminPanel'),
     authSection: getEl('authSection'),
-    contentLocker: getEl('contentLocker'), // Nuevo: Bloqueador de contenido
-    videoContainer: getEl('videoContainer') // Nuevo: Contenedor del video
+    contentLocker: getEl('contentLocker'),
+    videoContainer: getEl('videoContainer')
 };
 
-// === ACTIONS ===
-const ADMIN_EMAIL = "icarapia94@gmail.com"; // Email Real
+const ADMIN_EMAIL = "icarapia94@gmail.com";
 
-// --- LOGIN ---
-export async function login() {
+// --- LOGIN LOGIC ---
+
+async function handleUserLogin(user) {
+    console.log("Processing Login for:", user.email);
+
+    // GUARDAR/ACTUALIZAR USUARIO EN FIRESTORE
     try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-
-        // GUARDAR/ACTUALIZAR USUARIO EN FIRESTORE
         const userRef = doc(db, "users", user.uid);
         await setDoc(userRef, {
             email: user.email,
             displayName: user.displayName,
             photoURL: user.photoURL,
             lastLogin: new Date().toISOString(),
-            role: (user.email === ADMIN_EMAIL) ? 'admin' : 'student' // Rol básico
+            role: (user.email === ADMIN_EMAIL) ? 'admin' : 'student'
         }, { merge: true });
 
         console.log("Usuario sincronizado en DB");
 
-        // Redirección si es admin
+        // Redirección Admin si aplica
         if (user.email === ADMIN_EMAIL && !window.location.pathname.includes('/admin')) {
-            if (confirm("Hola Admin. ¿Ir al panel de control?")) {
-                window.location.href = "/admin";
-            }
+            // Solo redirigir si el usuario lo confirma, para no interrumpir flujos
         }
+    } catch (e) {
+        console.error("Error saving user:", e);
+    }
+}
+
+// Check for Redirect Result (Mobile Flow)
+getRedirectResult(auth).then((result) => {
+    if (result) {
+        console.log("Recuperado de Redirect Login");
+        handleUserLogin(result.user);
+    }
+}).catch((error) => {
+    console.error("Redirect Error:", error);
+});
+
+
+export async function login() {
+    try {
+        console.log("Attempting Popup Login...");
+        const result = await signInWithPopup(auth, provider);
+        await handleUserLogin(result.user);
     } catch (error) {
-        console.error("Login failed", error);
-        alert("Error de autenticación: " + error.message);
+        console.warn("Popup failed/blocked. Trying Redirect...", error);
+        // Fallback to Redirect for Mobile/Blocked Popups
+        try {
+            await signInWithRedirect(auth, provider);
+        } catch (e) {
+            alert("Error login: " + e.message);
+        }
     }
 }
 

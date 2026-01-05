@@ -327,7 +327,14 @@
 
             } catch (e) {
                 console.error(e);
-                document.getElementById('loading').innerHTML = "Error al cargar el curso.";
+                document.getElementById('loading').innerHTML = `
+                    <div style="text-align:center; color:#ff4444;">
+                        <h3>Error al cargar el curso</h3>
+                        <p>${e.message}</p>
+                        <p style="font-size:0.8rem; color:#888;">ID: ${courseId || 'No ID'}</p>
+                        <a href="/cursos" style="color:white; margin-top:10px; display:inline-block;">Volver al catálogo</a>
+                    </div>
+                `;
             }
         }
 
@@ -341,16 +348,18 @@
 
             const syl = document.getElementById('syllabusContainer');
             if (course.lessons && course.lessons.length > 0) {
-                syl.innerHTML = course.lessons.map((l, i) => `
+                syl.innerHTML = course.lessons.map((l, i) => {
+                    const type = l.type || 'video'; // Fallback
+                    return `
                     <div class="syllabus-item">
-                        <div class="lesson-icon">${l.type === 'video' ? '▶' : '📄'}</div>
+                        <div class="lesson-icon">${type === 'video' ? '▶' : '📄'}</div>
                         <div style="flex:1;">
-                            <div style="font-weight:600;">${l.title}</div>
-                            <div style="font-size:0.8rem; color:#888;">${l.type.toUpperCase()}</div>
+                            <div style="font-weight:600;">${l.title || 'Lección ' + (i + 1)}</div>
+                            <div style="font-size:0.8rem; color:#888;">${type.toUpperCase()}</div>
                         </div>
                         <div class="lesson-lock">🔒</div>
                     </div>
-                `).join('');
+                `}).join('');
             } else {
                 syl.innerHTML = '<div style="color:#888;">Próximamente se añadirá contenido.</div>';
             }

@@ -48,7 +48,7 @@ async function renderCourses() {
                     <p class="course-desc">${course.desc || 'Sin descripción'}</p>
                     <div class="course-meta">
                         <div class="course-price">${course.price || 'Gratis'}</div>
-                        <a href="/pages/curso-detalle.html?id=${course.id}" class="enroll-btn">Ver Detalles &rarr;</a>
+                        <a href="/pages/curso-detalle.html?id=${course.id}&v=2.2" class="enroll-btn">Ver Detalles &rarr;</a>
                     </div>
                 </div>
             `;
