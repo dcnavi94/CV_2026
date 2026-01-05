@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Panel | Iván Carapia</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <style>
+        :root {
+            --bg-dark: #02040a;
+            --card-bg: #0f1623;
+            --accent: #30d158;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding-top: 80px;
+            /* Space for fixed header */
+        }
+
+        /* Reusing Header Styles but simpler */
+        .student-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: rgba(2, 4, 10, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            box-sizing: border-box;
+            z-index: 1000;
+        }
+
+        .brand {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: white;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .welcome-section {
+            margin-bottom: 40px;
+        }
+
+        .welcome-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            line-height: 1;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* COURSES LIST */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .my-course-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .my-course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent);
+        }
+
+        .course-thumb {
+            height: 160px;
+            background: #222;
+            position: relative;
+        }
+
+        .course-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .course-body {
+            padding: 20px;
+        }
+
+        .course-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .progress-container {
+            margin-top: 15px;
+        }
+
+        .progress-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--accent);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+        }
+
+        .btn-continue {
+            display: block;
+            width: 100%;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 20px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .btn-continue:hover {
+            background: var(--accent);
+            color: black;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 16px;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="student-header">
+        <a href="/" class="brand">
+            <div style="width:30px; height:30px; background:var(--accent); border-radius:50%;"></div>
+            Iván Carapia <span style="opacity:0.5; font-weight:400;">| Aula Virtual</span>
+        </a>
+
+        <div style="display:flex; gap:20px; align-items:center;">
+            <a href="/cursos" style="color:white; text-decoration:none; font-size:0.9rem;">Explorar Cursos</a>
+            <!-- User Profile -->
+            <div id="userMenu" style="display:flex; align-items:center; gap:10px;">
+                <div style="text-align:right;">
+                    <div id="uName" style="font-weight:bold; font-size:0.9rem;">Cargando...</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted); cursor:pointer;" id="logoutBtn">Cerrar
+                        Sesión</div>
+                </div>
+                <img id="uAvatar" src=""
+                    style="width:36px; height:36px; border-radius:50%; background:#333; object-fit:cover;">
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="welcome-section">
+            <h1 class="welcome-title">Hola, <span id="welcomeName" style="color:var(--accent);">Estudiante</span> 👋
+            </h1>
+            <p class="welcome-subtitle">Aquí tienes el progreso de tu aprendizaje.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statStarted">0</div>
+                <div class="stat-label">Cursos Iniciados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statCompleted" style="color:var(--accent);">0</div>
+                <div class="stat-label">Completados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statCerts">0</div>
+                <div class="stat-label">Certificados</div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Mis Cursos</h2>
+        </div>
+
+        <div class="course-grid" id="coursesList">
+            <!-- Dynamic Content -->
+            <div class="empty-state">
+                <h3>Aún no te has inscrito en ningún curso.</h3>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Explora el catálogo y comienza a aprender hoy
+                    mismo.</p>
+                <a href="/cursos" class="btn-continue" style="display:inline-block; width:auto; padding:12px 30px;">Ver
+                    Catálogo</a>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { logout } from '/src/controllers/auth-controller.js';
+        import { getCourses } from '/src/controllers/course-controller.js';
+
+        // Logout logic
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            await logout();
+            window.location.href = '/cursos.html'; // Or home
+        });
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User logged in
+                document.getElementById('uName').textContent = user.displayName || user.email.split('@')[0];
+                document.getElementById('welcomeName').textContent = (user.displayName || user.email.split('@')[0]).split(' ')[0];
+                if (user.photoURL) document.getElementById('uAvatar').src = user.photoURL;
+
+                loadUserCourses(user);
+            } else {
+                // Not logged in -> Redirect to login/courses
+                window.location.href = '/cursos';
+            }
+        });
+
+        async function loadUserCourses(user) {
+            const grid = document.getElementById('coursesList');
+            const courses = await getCourses();
+
+            let coursesHTML = '';
+            let startedCount = 0;
+            let completedCount = 0;
+
+            // Check localStorage for progress on each course
+            // NOTE: In a real app, we should fetch this from Firestore 'users/{uid}/progress'
+            // For MVP, we iterate ALL courses and check if there is local progress.
+
+            let hasCourses = false;
+
+            courses.forEach(course => {
+                const progressKey = `progress_${course.id}`;
+                const savedProgress = localStorage.getItem(progressKey);
+
+                if (savedProgress) {
+                    hasCourses = true;
+                    startedCount++;
+
+                    const completedIndices = JSON.parse(savedProgress);
+                    const totalLessons = course.lessons ? course.lessons.length : 0;
+                    const completedLen = completedIndices.length;
+                    const percent = totalLessons === 0 ? 0 : Math.round((completedLen / totalLessons) * 100);
+
+                    if (percent === 100) completedCount++;
+
+                    coursesHTML += `
+                    <div class="my-course-card">
+                        <div class="course-thumb">
+                            <img src="${course.image || 'https://via.placeholder.com/400x200'}" alt="${course.title}">
+                            ${percent === 100 ? '<div style="position:absolute; top:10px; right:10px; background:var(--accent); color:black; font-weight:bold; font-size:0.7rem; padding:4px 8px; border-radius:4px;">COMPLETADO</div>' : ''}
+                        </div>
+                        <div class="course-body">
+                            <div class="course-title">${course.title}</div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-bar-bg">
+                                    <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                                </div>
+                                <div class="progress-text">
+                                    <span>${percent}% Completado</span>
+                                    <span>${completedLen}/${totalLessons} Lecciones</span>
+                                </div>
+                            </div>
+
+                            <a href="/curso?id=${course.id}" class="btn-continue">
+                                ${percent === 100 ? 'Ver Certificado' : 'Continuar Curso'}
+                            </a>
+                        </div>
+                    </div>
+                    `;
+                }
+            });
+
+            if (hasCourses) {
+                grid.innerHTML = coursesHTML;
+                document.getElementById('statStarted').textContent = startedCount;
+                document.getElementById('statCompleted').textContent = completedCount;
+                document.getElementById('statCerts').textContent = completedCount; // Assuming 1 cert per completed course
+            }
+            // If no courses (empty state remains)
+        }
+
+    </script>
+</body>
+
+</html>
