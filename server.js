@@ -79,7 +79,16 @@ const server = http.createServer((req, res) => {
         filePath = path.join(__dirname, routes[urlPath]);
     } else {
         // Archivo estático (CSS, JS, imágenes)
+        // 1. Intentar ruta directa
         filePath = path.join(__dirname, urlPath);
+
+        // 2. Si no existe, intentar buscar dentro de /public (Simular producción)
+        if (!fs.existsSync(filePath)) {
+            const publicPath = path.join(__dirname, 'public', urlPath);
+            if (fs.existsSync(publicPath)) {
+                filePath = publicPath;
+            }
+        }
     }
 
     // 3. LEER Y SERVIR ARCHIVO
