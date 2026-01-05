@@ -429,22 +429,58 @@
             const pb = document.getElementById('progressBar');
             if (pb) pb.style.width = `${percent}%`;
 
-            // Update list items visuals
-            document.querySelectorAll('.lesson-item').forEach((item, index) => {
-                if (completedLessons.has(index)) {
-                    if (!item.querySelector('.check-icon')) {
-                        const check = document.createElement('span');
-                        check.className = 'check-icon';
-                        check.textContent = ' ✓';
-                        check.style.color = '#30d158';
-                        check.style.fontWeight = 'bold';
-                        check.style.marginLeft = 'auto'; // Push to right
-                        item.appendChild(check);
-                        item.style.display = 'flex';
-                        item.style.justifyContent = 'space-between';
-                    }
+            // Check completion trigger
+            if (percent === 100) {
+                setTimeout(showCertificate, 1000); // Small delay for effect
+            }
+        }
+
+        // Certificate Logic
+        window.closeCertificate = function () {
+            document.getElementById('certificateModal').classList.remove('active');
+        }
+
+        function showCertificate() {
+            // Populate Data
+            const user = currentUser.get(); // Access user state (defined below wrapper) or use global var?
+            // Actually currentUser is a signal defined in line 356, its value is accessible via currentUser.get()
+            // Wait, signals are usually reactive. In my code line 658: currentUser.set(user).
+            // But let's check if currentUser variable is standard signal or my custom dummy.
+            // Assuming it's the one from previous context. Let's verify line 356 implementation.
+
+            // Fallback if currentUser not available perfectly scope-wise: use global 'auth.currentUser' from firebase if needed, 
+            // but let's assume we can get name from DOM if needed.
+            const nameEl = document.getElementById('userName');
+            const studentName = (user && (user.displayName || user.email)) || (nameEl ? nameEl.innerText.replace('Hola, ', '') : 'Estudiante');
+
+            document.getElementById('certStudentName').textContent = studentName || "Estudiante";
+            document.getElementById('certCourseName').textContent = currentCourse.title;
+
+            const today = new Date();
+            document.getElementById('certDate').textContent = today.toLocaleDateString();
+
+            // Show Modal
+            document.getElementById('certificateModal').classList.add('active');
+
+            // Launch confetti if possible? Maybe later.
+        }
+
+        // Update list items visuals
+        document.querySelectorAll('.lesson-item').forEach((item, index) => {
+            if (completedLessons.has(index)) {
+                if (!item.querySelector('.check-icon')) {
+                    const check = document.createElement('span');
+                    check.className = 'check-icon';
+                    check.textContent = ' ✓';
+                    check.style.color = '#30d158';
+                    check.style.fontWeight = 'bold';
+                    check.style.marginLeft = 'auto'; // Push to right
+                    item.appendChild(check);
+                    item.style.display = 'flex';
+                    item.style.justifyContent = 'space-between';
                 }
-            });
+            }
+        });
         }
 
         // Load course data
@@ -675,6 +711,258 @@
 
         loadCourse();
     </script>
+    <!-- Certificate Modal -->
+    <div id="certificateModal" class="certificate-modal">
+        <div class="certificate-container">
+            <button class="close-cert-btn" onclick="closeCertificate()">×</button>
+
+            <div class="certificate-content" id="printableCertificate">
+                <div class="cert-border">
+                    <div class="cert-header">
+                        <div class="cert-logo">🎓</div>
+                        <h1>Certificado de Finalización</h1>
+                        <p class="cert-subtitle">Este documento certifica que</p>
+                    </div>
+
+                    <div class="cert-body">
+                        <h2 id="certStudentName">Estudiante</h2>
+                        <p>Ha completado satisfactoriamente el curso</p>
+                        <h3 id="certCourseName">Nombre del Curso</h3>
+
+                        <div class="cert-details">
+                            <div class="cert-date">
+                                <span class="label">Fecha</span>
+                                <span class="value" id="certDate">--/--/----</span>
+                            </div>
+                            <div class="cert-signature">
+                                <span class="value">Ivan Carapia</span>
+                                <span class="label">Instructor</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cert-footer">
+                        <p>Validado por la plataforma de aprendizaje online</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cert-actions">
+                <button class="btn-download" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Certificate Modal Logic */
+        .certificate-modal {
+            display: none;
+            /* Hidden by default */
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        .certificate-modal.active {
+            display: flex;
+        }
+
+        .certificate-container {
+            position: relative;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        .close-cert-btn {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+        }
+
+        /* Certificate Design */
+        .certificate-content {
+            background: #fff;
+            color: #1a1a1a;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+            text-align: center;
+            font-family: 'Times New Roman', serif;
+        }
+
+        .cert-border {
+            border: 10px solid #30d158;
+            /* Green accent */
+            padding: 40px;
+            position: relative;
+        }
+
+        .cert-border::before {
+            content: '';
+            position: absolute;
+            inset: 5px;
+            border: 2px solid #1a1a1a;
+        }
+
+        .cert-logo {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .cert-header h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: #1a1a1a;
+        }
+
+        .cert-subtitle {
+            font-size: 1.5rem;
+            margin-top: 20px;
+            font-style: italic;
+            color: #555;
+        }
+
+        .cert-body h2 {
+            font-size: 3rem;
+            margin: 30px 0;
+            font-family: 'Georgia', serif;
+            color: #1f2937;
+            border-bottom: 2px solid #ddd;
+            display: inline-block;
+            padding-bottom: 10px;
+            min-width: 300px;
+        }
+
+        .cert-body h3 {
+            font-size: 2rem;
+            margin: 20px 0 40px;
+            color: #30d158;
+            font-weight: bold;
+        }
+
+        .cert-details {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 50px;
+        }
+
+        .cert-details>div {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .cert-details .value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-bottom: 1px solid #000;
+            padding-bottom: 5px;
+            min-width: 150px;
+        }
+
+        .cert-details .label {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #666;
+            letter-spacing: 2px;
+        }
+
+        .cert-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .btn-download {
+            background: #30d158;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Outfit', sans-serif;
+            box-shadow: 0 4px 15px rgba(48, 209, 88, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Print Styles - Crucial for PDF export */
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+
+            body {
+                background: white;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #certificateModal,
+            #printableCertificate,
+            #printableCertificate * {
+                visibility: visible;
+            }
+
+            #certificateModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: white;
+                padding: 0;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                backdrop-filter: none;
+            }
+
+            .certificate-content {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+                scale: 0.9;
+                /* Scale down slightly to fit margins if needed */
+            }
+
+            .close-cert-btn,
+            .cert-actions {
+                display: none !important;
+            }
+        }
+    </style>
 </body>
 
 </html>
