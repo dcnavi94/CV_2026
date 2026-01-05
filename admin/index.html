@@ -641,20 +641,86 @@
             const body = document.getElementById('coursesTableBody');
             body.innerHTML = '';
             courses.forEach(c => {
-                const json = encodeURIComponent(JSON.stringify(c));
-                body.innerHTML += `<tr><td>${c.title}</td><td>${c.price}</td><td><button onclick="window.editCourse('${json}')">✏️</button></td></tr>`;
+                const cSafe = { ...c };
+                delete cSafe.desc; // Reduce payload
+                const json = encodeURIComponent(JSON.stringify(c)); // Full object for edit
+                body.innerHTML += `<tr><td>${c.title}</td><td>${c.price}</td><td><button onclick="window.editCourse('${c.id}')" style="cursor:pointer;">✏️</button></td></tr>`;
             });
+            window.coursesCache = courses;
         }
 
         // Edit helpers
-        window.editCourse = (json) => {
-            const c = JSON.parse(decodeURIComponent(json));
-            // Fill form logic (simplified for brevity of this repair)
+        window.editCourse = (id) => {
+            const c = window.coursesCache.find(x => x.id === id);
+            if (!c) return;
+
+            document.getElementById('courseId').value = c.id;
             document.getElementById('title').value = c.title;
+            document.getElementById('price').value = c.price;
+            document.getElementById('desc').value = c.desc || '';
+            document.getElementById('image').value = c.image || '';
+            document.getElementById('tags').value = c.tags ? c.tags.join(', ') : '';
+
             window.currentLessons = c.lessons || [];
             renderLessonsUI();
+
+            document.getElementById('formTitle').textContent = "Editar Curso";
+            document.getElementById('submitBtn').textContent = "Guardar Cambios";
+            document.getElementById('cancelEditBtn').style.display = 'inline-block';
+
             switchView('create');
         };
+
+        document.getElementById('cancelEditBtn').addEventListener('click', () => {
+            document.getElementById('createCourseForm').reset();
+            document.getElementById('courseId').value = '';
+            window.currentLessons = [];
+            renderLessonsUI();
+            document.getElementById('formTitle').textContent = "Crear Nuevo Curso";
+            document.getElementById('submitBtn').textContent = "Publicar";
+            document.getElementById('cancelEditBtn').style.display = 'none';
+            switchView('courses');
+        });
+
+        // SUBMIT HANDLER
+        document.getElementById('createCourseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const originalText = btn.textContent;
+            btn.disabled = true;
+            btn.textContent = "Procesando...";
+
+            try {
+                const id = document.getElementById('courseId').value;
+                const title = document.getElementById('title').value;
+                const price = document.getElementById('price').value;
+                const desc = document.getElementById('desc').value;
+                const image = document.getElementById('image').value;
+                const tagsVal = document.getElementById('tags').value;
+                const tags = tagsVal ? tagsVal.split(',').map(s => s.trim()) : [];
+
+                const courseData = {
+                    title, price, desc, image, tags,
+                    lessons: window.currentLessons
+                };
+
+                if (id) {
+                    await updateCourse(id, courseData);
+                    alert("Curso actualizado.");
+                } else {
+                    await addCourse(courseData);
+                    alert("Curso creado.");
+                }
+
+                window.location.reload();
+
+            } catch (error) {
+                console.error(error);
+                alert("Error: " + error.message);
+                btn.disabled = false;
+                btn.textContent = originalText;
+            }
+        });
 
     </script>
 </body>
