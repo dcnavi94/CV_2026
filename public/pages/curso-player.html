@@ -373,7 +373,7 @@
     <script type="module">
         import { login, logout } from '/src/controllers/auth-controller.js';
         import { getCourseById } from '/src/controllers/course-controller.js';
-        import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { onAuthStateChanged, auth, db, doc, setDoc, getDoc } from '/src/config/firebase-config.js';
         import { currentUser } from '/src/models/user.js';
 
         // Get course ID from URL
@@ -398,25 +398,62 @@
         loginBtnLocker?.addEventListener('click', login);
         logoutBtn?.addEventListener('click', logout);
 
-        // Store course globally for lesson switching
+        // Store course globally
         let currentCourse = null;
         let currentLessonIndex = 0;
-        let completedLessons = new Set(); // Stores indices of completed lessons
+        let completedLessons = new Set();
 
-        // Load progress from localStorage
-        function loadProgress(courseId) {
-            const saved = localStorage.getItem(`progress_${courseId}`);
-            if (saved) {
-                completedLessons = new Set(JSON.parse(saved));
-            } else {
-                completedLessons = new Set();
+        // Load progress from Cloud (priority) or localStorage
+        async function loadProgress(courseId) {
+            let loaded = false;
+
+            // 1. Try Cloud if user logged in
+            const user = auth.currentUser;
+            if (user) {
+                try {
+                    const docSnap = await getDoc(doc(db, "users", user.uid, "progress", courseId));
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.completedLessons) {
+                            completedLessons = new Set(data.completedLessons);
+                            loaded = true;
+                        }
+                    }
+                } catch (e) { console.error("Cloud load error:", e); }
             }
+
+            // 2. Fallback to LocalStorage if not loaded from cloud
+            if (!loaded) {
+                const saved = localStorage.getItem(`progress_${courseId}`);
+                if (saved) {
+                    completedLessons = new Set(JSON.parse(saved));
+                }
+            }
+
             updateProgressUI();
         }
 
-        function saveProgress() {
-            if (courseId) {
-                localStorage.setItem(`progress_${courseId}`, JSON.stringify([...completedLessons]));
+        async function saveProgress() {
+            if (!courseId) return;
+
+            // 1. Save Local
+            localStorage.setItem(`progress_${courseId}`, JSON.stringify([...completedLessons]));
+
+            // 2. Save Cloud (Async, fire and forget)
+            const user = auth.currentUser;
+            if (user) {
+                const total = currentCourse?.lessons?.length || 0;
+                const completed = completedLessons.size;
+                const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+                try {
+                    await setDoc(doc(db, "users", user.uid, "progress", courseId), {
+                        completedLessons: [...completedLessons],
+                        percent: percent,
+                        lastUpdate: new Date().toISOString(),
+                        courseTitle: currentCourse?.title || 'Curso'
+                    }, { merge: true });
+                } catch (e) { console.error("Cloud save error:", e); }
             }
         }
 

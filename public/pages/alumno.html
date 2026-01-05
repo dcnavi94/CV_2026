@@ -21,10 +21,8 @@
             font-family: 'Outfit', sans-serif;
             margin: 0;
             padding-top: 80px;
-            /* Space for fixed header */
         }
 
-        /* Reusing Header Styles but simpler */
         .student-header {
             position: fixed;
             top: 0;
@@ -72,7 +70,6 @@
             font-size: 1.1rem;
         }
 
-        /* STATS GRID */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -109,7 +106,6 @@
             letter-spacing: 1px;
         }
 
-        /* COURSES LIST */
         .section-header {
             display: flex;
             justify-content: space-between;
@@ -239,7 +235,7 @@
                     <div style="font-size:0.75rem; color:var(--text-muted); cursor:pointer;" id="logoutBtn">Cerrar
                         Sesión</div>
                 </div>
-                <img id="uAvatar" src=""
+                <img id="uAvatar" src="https://via.placeholder.com/36"
                     style="width:36px; height:36px; border-radius:50%; background:#333; object-fit:cover;">
             </div>
         </div>
@@ -250,7 +246,7 @@
         <div class="welcome-section">
             <h1 class="welcome-title">Hola, <span id="welcomeName" style="color:var(--accent);">Estudiante</span> 👋
             </h1>
-            <p class="welcome-subtitle">Aquí tienes el progreso de tu aprendizaje.</p>
+            <p class="welcome-subtitle">Aquí tienes el progreso de tu aprendizaje (Sincronizado).</p>
         </div>
 
         <div class="stats-grid">
@@ -273,27 +269,20 @@
         </div>
 
         <div class="course-grid" id="coursesList">
-            <!-- Dynamic Content -->
-            <div class="empty-state">
-                <h3>Aún no te has inscrito en ningún curso.</h3>
-                <p style="color:var(--text-muted); margin-bottom:20px;">Explora el catálogo y comienza a aprender hoy
-                    mismo.</p>
-                <a href="/cursos" class="btn-continue" style="display:inline-block; width:auto; padding:12px 30px;">Ver
-                    Catálogo</a>
-            </div>
+            <div style="text-align:center; grid-column:1/-1;">Cargando tu progreso...</div>
         </div>
 
     </div>
 
     <script type="module">
-        import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { onAuthStateChanged, auth, db, collection, getDocs } from '/src/config/firebase-config.js';
         import { logout } from '/src/controllers/auth-controller.js';
         import { getCourses } from '/src/controllers/course-controller.js';
 
         // Logout logic
         document.getElementById('logoutBtn').addEventListener('click', async () => {
             await logout();
-            window.location.href = '/cursos.html'; // Or home
+            window.location.href = '/cursos';
         });
 
         onAuthStateChanged(auth, async (user) => {
@@ -305,75 +294,91 @@
 
                 loadUserCourses(user);
             } else {
-                // Not logged in -> Redirect to login/courses
                 window.location.href = '/cursos';
             }
         });
 
         async function loadUserCourses(user) {
             const grid = document.getElementById('coursesList');
-            const courses = await getCourses();
 
-            let coursesHTML = '';
-            let startedCount = 0;
-            let completedCount = 0;
+            try {
+                // 1. Fetch Cloud Progress
+                const progressRef = collection(db, "users", user.uid, "progress");
+                const snapshot = await getDocs(progressRef);
 
-            // Check localStorage for progress on each course
-            // NOTE: In a real app, we should fetch this from Firestore 'users/{uid}/progress'
-            // For MVP, we iterate ALL courses and check if there is local progress.
-
-            let hasCourses = false;
-
-            courses.forEach(course => {
-                const progressKey = `progress_${course.id}`;
-                const savedProgress = localStorage.getItem(progressKey);
-
-                if (savedProgress) {
-                    hasCourses = true;
-                    startedCount++;
-
-                    const completedIndices = JSON.parse(savedProgress);
-                    const totalLessons = course.lessons ? course.lessons.length : 0;
-                    const completedLen = completedIndices.length;
-                    const percent = totalLessons === 0 ? 0 : Math.round((completedLen / totalLessons) * 100);
-
-                    if (percent === 100) completedCount++;
-
-                    coursesHTML += `
-                    <div class="my-course-card">
-                        <div class="course-thumb">
-                            <img src="${course.image || 'https://via.placeholder.com/400x200'}" alt="${course.title}">
-                            ${percent === 100 ? '<div style="position:absolute; top:10px; right:10px; background:var(--accent); color:black; font-weight:bold; font-size:0.7rem; padding:4px 8px; border-radius:4px;">COMPLETADO</div>' : ''}
-                        </div>
-                        <div class="course-body">
-                            <div class="course-title">${course.title}</div>
-                            
-                            <div class="progress-container">
-                                <div class="progress-bar-bg">
-                                    <div class="progress-bar-fill" style="width: ${percent}%"></div>
-                                </div>
-                                <div class="progress-text">
-                                    <span>${percent}% Completado</span>
-                                    <span>${completedLen}/${totalLessons} Lecciones</span>
-                                </div>
-                            </div>
-
-                            <a href="/curso?id=${course.id}" class="btn-continue">
-                                ${percent === 100 ? 'Ver Certificado' : 'Continuar Curso'}
-                            </a>
-                        </div>
-                    </div>
-                    `;
+                if (snapshot.empty) {
+                    renderEmpty(grid);
+                    return;
                 }
-            });
 
-            if (hasCourses) {
-                grid.innerHTML = coursesHTML;
-                document.getElementById('statStarted').textContent = startedCount;
-                document.getElementById('statCompleted').textContent = completedCount;
-                document.getElementById('statCerts').textContent = completedCount; // Assuming 1 cert per completed course
+                // 2. Fetch Catalog (optimized: could be just one doc fetch if stored meta)
+                const allCourses = await getCourses();
+                const coursesMap = new Map(allCourses.map(c => [c.id, c]));
+
+                let html = '';
+                let started = 0;
+                let completed = 0;
+
+                snapshot.forEach(doc => {
+                    const prog = doc.data();
+                    const courseId = doc.id;
+                    const course = coursesMap.get(courseId);
+
+                    if (course) {
+                        started++;
+                        const percent = prog.percent || 0;
+                        if (percent >= 100) completed++;
+
+                        html += `
+                        <div class="my-course-card">
+                            <div class="course-thumb">
+                                <img src="${course.image || 'https://via.placeholder.com/400x200'}" alt="${course.title}">
+                                ${percent >= 100 ? '<div style="position:absolute; top:10px; right:10px; background:var(--accent); color:black; font-weight:bold; font-size:0.7rem; padding:4px 8px; border-radius:4px;">COMPLETADO</div>' : ''}
+                            </div>
+                            <div class="course-body">
+                                <div class="course-title">${course.title}</div>
+                                <div class="progress-container">
+                                    <div class="progress-bar-bg">
+                                        <div class="progress-bar-fill" style="width: ${percent}%"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>${percent}% Completado</span>
+                                        <span>Última vez: ${prog.lastUpdate ? new Date(prog.lastUpdate).toLocaleDateString() : '-'}</span>
+                                    </div>
+                                </div>
+                                <a href="/pages/curso-player.html?id=${course.id}" class="btn-continue">
+                                    ${percent >= 100 ? 'Ver Certificado' : 'Continuar Curso'}
+                                </a>
+                            </div>
+                        </div>`;
+                    }
+                });
+
+                if (started === 0) {
+                    renderEmpty(grid);
+                } else {
+                    grid.innerHTML = html;
+                    document.getElementById('statStarted').textContent = started;
+                    document.getElementById('statCompleted').textContent = completed;
+                    document.getElementById('statCerts').textContent = completed;
+                }
+
+            } catch (e) {
+                console.error(e);
+                grid.innerHTML = '<div style="color:red; text-align:center;">Error al cargar progreso.</div>';
             }
-            // If no courses (empty state remains)
+        }
+
+        function renderEmpty(container) {
+            container.innerHTML = `
+            <div class="empty-state">
+                <h3>Aún no te has inscrito en ningún curso.</h3>
+                <p style="color:var(--text-muted); margin-bottom:20px;">Explora el catálogo y comienza a aprender hoy mismo.</p>
+                <a href="/cursos" class="btn-continue" style="display:inline-block; width:auto; padding:12px 30px;">Ver Catálogo</a>
+            </div>`;
+            document.getElementById('statStarted').textContent = 0;
+            document.getElementById('statCompleted').textContent = 0;
+            document.getElementById('statCerts').textContent = 0;
         }
 
     </script>
