@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursos PREMIUM | Iván Carapia</title>
+    <meta name="description" content="Aprende infraestructura TI, desarrollo web y Linux con mis cursos prácticos.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/public/assets/css/styles.css">
+    <style>
+        /* Estilos específicos para cursos */
+        .courses-hero {
+            padding: 120px 0 60px;
+            text-align: center;
+        }
+
+        .courses-hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(to right, #ffffff, var(--muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 40px 0;
+        }
+
+        .course-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .course-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .course-thumb {
+            height: 180px;
+            background: #1e293b;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.4s;
+        }
+
+        .course-card:hover .course-thumb img {
+            transform: scale(1.05);
+        }
+
+        .course-tag {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .course-body {
+            padding: 24px;
+        }
+
+        .course-title {
+            font-size: 1.25rem;
+            margin: 0 0 10px;
+            color: #fff;
+        }
+
+        .course-desc {
+            color: var(--muted);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--border);
+            padding-top: 16px;
+            margin-top: auto;
+        }
+
+        .course-price {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .course-price span {
+            font-size: 0.8rem;
+            font-weight: 400;
+            color: var(--muted);
+            text-decoration: line-through;
+            margin-right: 6px;
+        }
+
+        .enroll-btn {
+            background: var(--accent);
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+
+        .enroll-btn:hover {
+            box-shadow: 0 0 20px rgba(48, 209, 88, 0.4);
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mouse-glow" id="mouseGlow"></div>
+
+    <!-- Nav -->
+    <a href="/inicio" class="logo">
+        <div class="logo-icon">
+            <div class="play-icon"></div>
+        </div>
+        <div class="logo-text">
+            <span class="name">Iván Carapia</span>
+            <span class="role">Academy</span>
+        </div>
+    </a>
+    <div class="links">
+        <a href="/inicio">← Volver al inicio</a>
+        <a href="/admin" id="adminLink"
+            style="display:none; background:rgba(48,209,88,0.2); padding:8px 16px; border-radius:8px; color:#30d158;">Panel
+            Admin</a>
+    </div>
+    </div>
+    </nav>
+
+    <main class="container">
+        <div class="courses-hero">
+            <h1>Domina la Infraestructura</h1>
+            <p style="color:var(--muted); font-size:1.2rem; max-width:600px; margin:0 auto;">
+                Cursos prácticos para llevar tu carrera al siguiente nivel. De la teoría a la implementación real.
+            </p>
+        </div>
+
+        <div class="courses-grid">
+            <!-- Los cursos se cargan dinámicamente desde Firebase -->
+            <div id="courses-loader"
+                style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--muted);">
+                <div style="font-size: 3rem; margin-bottom: 20px;">📚</div>
+                <p style="font-size: 1.2rem;">Cargando cursos...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer style="text-align:center; padding:40px 0; color:var(--muted); border-top:1px solid var(--border);">
+        <p>© 2026 Iván Carapia Academy</p>
+    </footer>
+
+    <script>
+        // Mouse glow effect
+        document.addEventListener("mousemove", (e) => {
+            const glow = document.getElementById("mouseGlow");
+            glow.style.left = e.clientX + "px";
+            glow.style.top = e.clientY + "px";
+        });
+    </script>
+    <!-- Carga Dinámica de Cursos -->
+    <script type="module" src="/public/assets/js/public-courses.js"></script>
+    <script type="module">
+        import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { currentUser } from '/src/models/user.js';
+
+        onAuthStateChanged(auth, (user) => {
+            currentUser.set(user);
+            if (currentUser.isAdmin()) {
+                document.getElementById('adminLink').style.display = 'inline-block';
+            }
+        });
+    </script>
+</body>
+
+</html>

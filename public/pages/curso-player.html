@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aula Virtual | Iván Carapia</title>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/assets/css/styles.css">
+    <style>
+        body {
+            overflow-x: hidden;
+            background: #04070d;
+            color: white;
+        }
+
+        /* Layout */
+        .course-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: 100vh;
+        }
+
+        /* Sidebar (Temario) */
+        .course-sidebar {
+            background: rgba(11, 17, 29, 0.95);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-link {
+            color: #aaa;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .back-link:hover {
+            color: #fff;
+        }
+
+        .module-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .module-header {
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+        }
+
+        .lesson-item {
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        .lesson-item:hover {
+            background: rgba(255, 255, 255, 0.03);
+            color: #fff;
+        }
+
+        .lesson-item.active {
+            background: rgba(48, 209, 88, 0.1);
+            color: #30d158;
+            border-left: 3px solid #30d158;
+        }
+
+        /* Main Content */
+        .course-content {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .video-player {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            margin-bottom: 30px;
+        }
+
+        .lesson-title {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .lesson-desc {
+            color: #ccc;
+            line-height: 1.6;
+            max-width: 800px;
+            font-size: 1.05rem;
+        }
+
+        @media (max-width: 900px) {
+            .course-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .course-sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                border: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+
+            .course-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="course-layout">
+        <!-- Sidebar -->
+        <aside class="course-sidebar">
+            <div class="sidebar-header">
+                <a href="/cursos" class="back-link">← Volver a Cursos</a>
+                <h4 style="margin:0; font-weight:600;">Temario del Curso</h4>
+
+                <!-- User Auth Area -->
+                <div style="margin: 20px 0; padding:15px; background:rgba(255,255,255,0.05); border-radius:12px;">
+                    <button id="loginBtn"
+                        style="width:100%; padding:10px; background:#30d158; border:none; border-radius:6px; cursor:pointer; font-weight:700; color:black;">
+                        Iniciar Sesión
+                    </button>
+                    <div id="userInfo"></div>
+                    <button id="logoutBtn"
+                        style="display:none; width:100%; margin-top:10px; padding:8px; background:rgba(239,68,68,0.2); color:#ef4444; border:1px solid #ef4444; border-radius:6px; cursor:pointer; font-size:0.8rem;">
+                        Cerrar Sesión
+                    </button>
+                </div>
+
+                <div style="height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden;">
+                    <div style="width:0%; height:100%; background:#30d158;"></div>
+                </div>
+                <div style="font-size:0.75rem; color:#888; margin-top:6px;">0% Completado</div>
+            </div>
+
+            <ul class="module-list">
+                <li class="module-header">Contenido del Curso</li>
+                <li class="lesson-item active">
+                    Intro & Bienvenida
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Content -->
+        <main class="course-content">
+            <!-- LOCKER: Se muestra si no hay usuario -->
+            <div id="contentLocker"
+                style="display:none; width:100%; aspect-ratio:16/9; background:#0b111d; border-radius:16px; flex-direction:column; align-items:center; justify-content:center; text-align:center; border:1px solid rgba(255,255,255,0.1);">
+                <div style="font-size:3rem; margin-bottom:15px;">🔒</div>
+                <h3 style="margin:0 0 10px 0;">Contenido Exclusivo para Estudiantes</h3>
+                <p style="color:#888; max-width:400px; margin-bottom:25px;">Por favor inicia sesión para acceder a este
+                    contenido.</p>
+                <button id="loginBtnLocker"
+                    style="padding:12px 30px; background:#30d158; color:black; border:none; border-radius:8px; font-weight:800; cursor:pointer; font-size:1rem;">
+                    Acceder a la Clase
+                </button>
+            </div>
+
+            <!-- VIDEO -->
+            <div id="videoContainer" class="video-player" style="display:none;">
+                <iframe width="100%" height="100%" src="" title="YouTube video player" frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerpolicy="strict-origin-when-cross-origin" allowfullscreen style="border:0;"></iframe>
+            </div>
+
+            <!-- DATOS DEL CURSO (Requeridos por scripts) -->
+            <h1 class="lesson-title">Cargando...</h1>
+            <div class="lesson-desc"></div>
+
+        </main>
+    </div>
+
+    <!-- Logic -->
+    <script type="module">
+        import { login, logout } from '/src/controllers/auth-controller.js';
+        import { getCourseById } from '/src/controllers/course-controller.js';
+        import { onAuthStateChanged, auth } from '/src/config/firebase-config.js';
+        import { currentUser } from '/src/models/user.js';
+
+        // Get course ID from URL
+        const params = new URLSearchParams(window.location.search);
+        const courseId = params.get('id');
+
+        // UI Elements
+        const loginBtn = document.getElementById('loginBtn');
+        const loginBtnLocker = document.getElementById('loginBtnLocker');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userInfo = document.getElementById('userInfo');
+        const videoContainer = document.getElementById('videoContainer');
+        const contentLocker = document.getElementById('contentLocker');
+        const lessonTitle = document.querySelector('.lesson-title');
+        const lessonDesc = document.querySelector('.lesson-desc');
+        const moduleList = document.querySelector('.module-list');
+
+        // Login handlers
+        loginBtn?.addEventListener('click', login);
+        loginBtnLocker?.addEventListener('click', login);
+        logoutBtn?.addEventListener('click', logout);
+
+        // Store course globally for lesson switching
+        let currentCourse = null;
+        let currentLessonIndex = 0;
+
+        // Load course data
+        async function loadCourse() {
+            if (!courseId) {
+                lessonTitle.textContent = 'Curso no encontrado';
+                return;
+            }
+            try {
+                currentCourse = await getCourseById(courseId);
+                lessonTitle.textContent = currentCourse.title;
+                lessonDesc.textContent = currentCourse.desc || '';
+
+                // Render lessons
+                if (currentCourse.lessons && currentCourse.lessons.length > 0) {
+                    let html = '<li class="module-header">Contenido del Curso</li>';
+                    currentCourse.lessons.forEach((lesson, i) => {
+                        const icon = getTypeIcon(lesson.type);
+                        html += `<li class="lesson-item ${i === 0 ? 'active' : ''}" data-index="${i}">${icon} ${lesson.title}</li>`;
+                    });
+                    moduleList.innerHTML = html;
+
+                    // Load first lesson
+                    loadLesson(0);
+
+                    // Add click handlers for lessons
+                    moduleList.querySelectorAll('.lesson-item').forEach(item => {
+                        item.addEventListener('click', () => {
+                            const index = parseInt(item.dataset.index);
+                            if (!isNaN(index)) {
+                                loadLesson(index);
+                            }
+                        });
+                    });
+                }
+            } catch (e) {
+                lessonTitle.textContent = 'Error al cargar el curso';
+                console.error(e);
+            }
+        }
+
+        function getTypeIcon(type) {
+            switch (type) {
+                case 'video': return '🎥';
+                case 'quiz': return '📝';
+                case 'pdf': return '📄';
+                case 'link': return '🔗';
+                default: return '📚';
+            }
+        }
+
+        function loadLesson(index) {
+            if (!currentCourse || !currentCourse.lessons || !currentCourse.lessons[index]) return;
+
+            const lesson = currentCourse.lessons[index];
+            currentLessonIndex = index;
+
+            // Update active class
+            moduleList.querySelectorAll('.lesson-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            // Update content based on lesson type
+            const iframe = videoContainer.querySelector('iframe');
+
+            if (lesson.type === 'video' && lesson.video) {
+                iframe.src = `https://www.youtube.com/embed/${lesson.video}`;
+                videoContainer.style.display = 'block';
+                lessonTitle.textContent = lesson.title;
+                lessonDesc.innerHTML = '';
+            } else if (lesson.type === 'quiz') {
+                videoContainer.style.display = 'none';
+                lessonTitle.textContent = '📝 ' + lesson.title;
+
+                // Render interactive quiz
+                if (lesson.questions && lesson.questions.length > 0) {
+                    let quizHtml = `
+                        <div style="background:rgba(48,209,88,0.1); padding:20px; border-radius:12px; border:1px solid rgba(48,209,88,0.3); margin-top:20px;">
+                            <div style="font-weight:700; margin-bottom:15px; color:#30d158;">📝 Examen - ${lesson.questions.length} pregunta(s)</div>
+                    `;
+
+                    lesson.questions.forEach((q, qIdx) => {
+                        quizHtml += `
+                            <div class="quiz-question" data-correct="${q.correct}" style="background:rgba(0,0,0,0.3); padding:15px; border-radius:8px; margin-bottom:15px;">
+                                <div style="font-weight:700; margin-bottom:10px;">${qIdx + 1}. ${q.question}</div>
+                                <div style="display:grid; gap:8px;">
+                        `;
+
+                        q.options.forEach((opt, optIdx) => {
+                            const letter = String.fromCharCode(65 + optIdx);
+                            quizHtml += `
+                                <button type="button" class="quiz-option" data-question="${qIdx}" data-option="${optIdx}"
+                                    style="display:flex; align-items:center; gap:10px; padding:12px 15px; background:rgba(255,255,255,0.05); 
+                                    border:1px solid rgba(255,255,255,0.2); border-radius:8px; color:white; cursor:pointer; text-align:left; transition:0.2s;">
+                                    <span style="width:24px; height:24px; border-radius:50%; background:rgba(255,255,255,0.1); 
+                                        display:flex; align-items:center; justify-content:center; font-weight:700; font-size:0.8rem;">${letter}</span>
+                                    ${opt}
+                                </button>
+                            `;
+                        });
+
+                        quizHtml += `</div><div class="quiz-result" style="margin-top:10px;"></div></div>`;
+                    });
+
+                    quizHtml += `<div id="quizScore" style="text-align:center; padding:15px; display:none;"></div></div>`;
+                    lessonDesc.innerHTML = quizHtml;
+
+                    // Add click handlers for quiz options
+                    document.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.addEventListener('click', function () {
+                            const questionEl = this.closest('.quiz-question');
+                            const correctAnswer = parseInt(questionEl.dataset.correct);
+                            const selectedAnswer = parseInt(this.dataset.option);
+                            const resultEl = questionEl.querySelector('.quiz-result');
+
+                            // Disable all options in this question
+                            questionEl.querySelectorAll('.quiz-option').forEach(opt => {
+                                opt.disabled = true;
+                                opt.style.opacity = '0.6';
+                            });
+
+                            // Show result
+                            if (selectedAnswer === correctAnswer) {
+                                this.style.background = 'rgba(48,209,88,0.3)';
+                                this.style.borderColor = '#30d158';
+                                resultEl.innerHTML = '<span style="color:#30d158; font-weight:700;">✓ ¡Correcto!</span>';
+                            } else {
+                                this.style.background = 'rgba(239,68,68,0.3)';
+                                this.style.borderColor = '#ef4444';
+                                const correctLetter = String.fromCharCode(65 + correctAnswer);
+                                resultEl.innerHTML = `<span style="color:#ef4444; font-weight:700;">✗ Incorrecto.</span> <span style="color:#888;">La respuesta correcta era: ${correctLetter}</span>`;
+
+                                // Highlight correct answer
+                                questionEl.querySelector(`.quiz-option[data-option="${correctAnswer}"]`).style.background = 'rgba(48,209,88,0.2)';
+                            }
+                        });
+                    });
+                } else {
+                    lessonDesc.innerHTML = '<p style="color:#888;">Este examen no tiene preguntas configuradas.</p>';
+                }
+            } else if (lesson.type === 'pdf' || lesson.type === 'link') {
+                videoContainer.style.display = 'none';
+                lessonTitle.textContent = lesson.title;
+
+                // Check if it's a Google Drive link
+                const isGoogleDrive = lesson.url && (
+                    lesson.url.includes('drive.google.com') ||
+                    lesson.url.includes('docs.google.com')
+                );
+
+                if (isGoogleDrive && lesson.type === 'pdf') {
+                    // Convert to embed URL if needed
+                    let embedUrl = lesson.url;
+                    if (lesson.url.includes('/view')) {
+                        embedUrl = lesson.url.replace('/view', '/preview');
+                    } else if (!lesson.url.includes('/preview')) {
+                        // Try to extract file ID and create preview URL
+                        const match = lesson.url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+                        if (match) {
+                            embedUrl = `https://drive.google.com/file/d/${match[1]}/preview`;
+                        }
+                    }
+
+                    lessonDesc.innerHTML = `
+                        <div style="margin-top:20px;">
+                            <iframe src="${embedUrl}" 
+                                style="width:100%; height:600px; border:none; border-radius:12px; background:#1a1a2e;"
+                                allow="autoplay"></iframe>
+                            <div style="text-align:center; margin-top:15px;">
+                                <a href="${lesson.url}" target="_blank" 
+                                   style="color:#30d158; text-decoration:none; font-size:0.9rem;">
+                                    📥 Descargar PDF / Abrir en nueva pestaña →
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Regular link or non-Google PDF
+                    lessonDesc.innerHTML = `
+                        <div style="background:rgba(255,255,255,0.05); padding:25px; border-radius:12px; text-align:center; margin-top:20px;">
+                            <div style="font-size:3rem; margin-bottom:15px;">${lesson.type === 'pdf' ? '📄' : '🔗'}</div>
+                            <a href="${lesson.url}" target="_blank" style="display:inline-block; padding:15px 30px; background:#30d158; color:black; text-decoration:none; border-radius:8px; font-weight:700;">
+                                Abrir ${lesson.type === 'pdf' ? 'PDF' : 'enlace'} →
+                            </a>
+                            <p style="color:#888; font-size:0.85rem; margin-top:15px;">Se abrirá en una nueva pestaña</p>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Auth state
+        onAuthStateChanged(auth, (user) => {
+            currentUser.set(user);
+            if (user) {
+                // Logged in
+                loginBtn.style.display = 'none';
+                logoutBtn.style.display = 'block';
+                userInfo.innerHTML = `<div style="margin-top:10px; font-size:0.85rem;">Hola, <strong>${user.displayName || user.email}</strong></div>`;
+                videoContainer.style.display = 'block';
+                contentLocker.style.display = 'none';
+            } else {
+                // Not logged in
+                loginBtn.style.display = 'block';
+                logoutBtn.style.display = 'none';
+                userInfo.innerHTML = '';
+                videoContainer.style.display = 'none';
+                contentLocker.style.display = 'flex';
+            }
+        });
+
+        loadCourse();
+    </script>
+</body>
+
+</html>
