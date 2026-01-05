@@ -298,6 +298,55 @@
         // Store course globally for lesson switching
         let currentCourse = null;
         let currentLessonIndex = 0;
+        let completedLessons = new Set(); // Stores indices of completed lessons
+
+        // Load progress from localStorage
+        function loadProgress(courseId) {
+            const saved = localStorage.getItem(`progress_${courseId}`);
+            if (saved) {
+                completedLessons = new Set(JSON.parse(saved));
+            } else {
+                completedLessons = new Set();
+            }
+            updateProgressUI();
+        }
+
+        function saveProgress() {
+            if (courseId) {
+                localStorage.setItem(`progress_${courseId}`, JSON.stringify([...completedLessons]));
+            }
+        }
+
+        function updateProgressUI() {
+            if (!currentCourse || !currentCourse.lessons) return;
+
+            const total = currentCourse.lessons.length;
+            const completed = completedLessons.size;
+            const percent = total === 0 ? 0 : Math.round((completed / total) * 100);
+
+            // Update bar text
+            document.querySelector('.sidebar-header div[style*="font-size:0.75rem"]').textContent = `${percent}% Completado`;
+
+            // Update bar width
+            document.querySelector('.sidebar-header div[style*="width:0%"]').style.width = `${percent}%`;
+
+            // Update list items visuals
+            document.querySelectorAll('.lesson-item').forEach((item, index) => {
+                if (completedLessons.has(index)) {
+                    if (!item.querySelector('.check-icon')) {
+                        const check = document.createElement('span');
+                        check.className = 'check-icon';
+                        check.textContent = ' ✓';
+                        check.style.color = '#30d158';
+                        check.style.fontWeight = 'bold';
+                        check.style.marginLeft = 'auto'; // Push to right
+                        item.appendChild(check);
+                        item.style.display = 'flex';
+                        item.style.justifyContent = 'space-between';
+                    }
+                }
+            });
+        }
 
         // Load course data
         async function loadCourse() {
@@ -321,6 +370,9 @@
 
                     // Load first lesson
                     loadLesson(0);
+
+                    // Initialize Progress
+                    loadProgress(courseId);
 
                     // Add click handlers for lessons
                     moduleList.querySelectorAll('.lesson-item').forEach(item => {
@@ -361,6 +413,11 @@
             moduleList.querySelectorAll('.lesson-item').forEach((item, i) => {
                 item.classList.toggle('active', i === index);
             });
+
+            // Mark as completed and update logic
+            completedLessons.add(index);
+            saveProgress();
+            updateProgressUI();
 
             // Update content based on lesson type
             const iframe = videoContainer.querySelector('iframe');

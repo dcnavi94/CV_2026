@@ -1026,21 +1026,24 @@ footer {
         order: 3;
     }
 
-    /* Mobile Menu */
+    /* Mobile Menu Overlay */
     .links {
         display: none;
         position: fixed;
-        top: 60px;
+        top: 0;
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(4, 7, 13, 0.98);
+        background: rgba(4, 7, 13, 0.95);
         backdrop-filter: blur(20px);
         flex-direction: column;
-        padding: 30px 20px;
-        gap: 8px;
-        z-index: 99;
-        overflow-y: auto;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 20px;
+        gap: 20px;
+        z-index: 1000;
+        /* Encima de todo */
+        transition: opacity 0.3s;
     }
 
     .links.active {
@@ -1054,19 +1057,35 @@ footer {
 
     .links a.nav-courses {
         display: block;
-        padding: 16px 20px;
+        padding: 15px 40px;
         text-align: center;
-        border-radius: 12px;
-        font-size: 1.2rem;
-        border: 1px solid var(--accent);
+        border-radius: 50px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        border: 2px solid var(--accent);
         transition: 0.3s;
-        background: rgba(48, 209, 88, 0.15);
+        background: rgba(48, 209, 88, 0.1);
         color: var(--accent);
+        width: 100%;
+        max-width: 300px;
     }
 
     .links a.nav-courses:hover {
         background: var(--accent);
         color: black;
+        box-shadow: 0 0 30px rgba(48, 209, 88, 0.4);
+    }
+
+    /* Ajustar botón hamburguesa */
+    .hamburger {
+        display: block;
+        order: 3;
+        z-index: 1001;
+        /* Encima del overlay */
+    }
+
+    .hamburger.active span {
+        background: var(--accent);
     }
 
     .social-links {
@@ -1075,10 +1094,12 @@ footer {
 
     .right {
         gap: 10px;
+        z-index: 1001;
     }
 
     .pill {
-        transform: scale(0.85);
+        transform: scale(0.9);
+        z-index: 1001;
     }
 }
 
